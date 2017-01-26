@@ -50,7 +50,7 @@ if __name__ == '__main__':
                 print('The fuction sum_i did not identify an incorrect input')
         else:
                 print('sum_i identified an incorrect input')
-        if sum_i(incorrect_list) != None:
+        if sum_r(incorrect_list) != None:
                 print('The fuction sum_r did not identify an incorrect input')
         else:
                 print('sum_r identified an incorrect input')
