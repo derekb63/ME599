@@ -44,6 +44,5 @@ plt.subplot(616)
 n, bins, patches = plt.hist(gen_hist_val(num_samples[5]), num_samples[5]/10)
 plt.xlabel('Value of sum')
 plt.ylabel('Number of occurrences')
-plt.axes(xmin=0, xmax=10)
 
 plt.show()
