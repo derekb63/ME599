@@ -18,7 +18,7 @@ def uniform_sum():
 	return sum
 
 num_samples = [10, 100, 1000, 10000, 100000, 1000000]
-
+#num_samples = [100, 100, 100, 100, 100, 100]
 # Limits of the values of a sum of numbers between 0 and 1
 x_range = [0, 10]
 
@@ -29,20 +29,13 @@ def gen_hist_val(num_samples):
 		hist_vals.append(uniform_sum())
 	return hist_vals
 
-plt.figure(1)
-plt.subplot(611)
-n, bins, patches = plt.hist(gen_hist_val(num_samples[0]), int(num_samples[0]/10))
-plt.subplot(612)
-n, bins, patches = plt.hist(gen_hist_val(num_samples[1]), int(num_samples[1]/10))
-plt.subplot(613)
-n, bins, patches = plt.hist(gen_hist_val(num_samples[2]), int(num_samples[2]/10))
-plt.subplot(614)
-n, bins, patches = plt.hist(gen_hist_val(num_samples[3]), int(num_samples[3]/10))
-plt.subplot(615)
-n, bins, patches = plt.hist(gen_hist_val(num_samples[4]), int(num_samples[4]/10))
-plt.subplot(616)
-n, bins, patches = plt.hist(gen_hist_val(num_samples[5]), int(num_samples[5]/10))
-plt.xlabel('Value of sum')
-plt.ylabel('Number of occurrences')
+for i in range(6):
+    plt.subplot(int('32{0}'.format(i+1)))
+    n, bins, patches = plt.hist(gen_hist_val(num_samples[i]),
+                                             int(num_samples[i]/10))
+    plt.xlim([0, 9])
+    if i+1 is 5:
+        plt.xlabel('Value of sum')
+        plt.ylabel('Number of occurrences')
 
 plt.show()
