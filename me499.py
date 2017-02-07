@@ -7,6 +7,7 @@ from os import remove
 import argparse
 import getpass
 import inspect
+import urllib
 
 from subprocess import call,Popen,PIPE
 
@@ -102,7 +103,10 @@ def create(number):
         pass
 
     # Get the new file, unpack it, and remove it
-    call(['wget', 'http://web.engr.oregonstate.edu/~smartw/me499/assignments/{0}'.format(filename)])
+    urllib.urlretrieve ('http://web.engr.oregonstate.edu/~smartw/me499/assignments/{0}'.format(filename), filename)
+    #response = urllib2.urlopen('http://web.engr.oregonstate.edu/~smartw/me499/assignments/{0}'.format(filename))
+    #html = response.read()
+    #call(['wget', 'http://web.engr.oregonstate.edu/~smartw/me499/assignments/{0}'.format(filename)])
     call(['tar', 'xzf', filename])
     remove(filename)
 
