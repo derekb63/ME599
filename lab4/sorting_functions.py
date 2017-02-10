@@ -28,13 +28,17 @@ def is_sorted(check_list):
 
 
 def quicksort(to_sort):
-	if len(to_sort) == 1 or len(to_sort) == 0:
-		return to_sort
-	pivot = to_sort[int(len(to_sort)/2)]
-	smaller = [ i for i in to_sort if i <= pivot]
-	larger = [ i for i in to_sort if i > pivot]
-	sorted = quicksort(smaller) + pivot + quicksort(larger)
-	return sorted
+        if len(to_sort) == 1:
+                return to_sort
+        pivot = to_sort[int(len(to_sort)/2)]
+        smaller = [ i for i in to_sort if i <= pivot]
+        larger = [ i for i in to_sort if i > pivot]
+        print('To sort:', to_sort)
+        print('Pivot:',   pivot)
+        print('Smaller:', smaller)
+        print('Larger:',  larger)
+        sorted_list = quicksort(smaller) + pivot + quicksort(larger)
+        return sorted_list
 
 
 if __name__ == '__main__':
