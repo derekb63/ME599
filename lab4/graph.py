@@ -9,7 +9,7 @@ from time import time
 import timeit
 import numpy as np
 import matplotlib.pyplot as plt
-from sorting_functions import bubblesort, quicksort, insertionsort
+from sort import bubblesort, quicksort, insertion_sort
 
 def graph(list_sizes=np.arange(1, 1000, 100)):
     bubble_time = []
@@ -33,7 +33,7 @@ def graph(list_sizes=np.arange(1, 1000, 100)):
         quicksort_time.append(time()-quicksort_time_start)
         
         insert_time_start = time()
-        insertionsort(test_list)
+        insertion_sort(test_list)
         insert_time.append(time()-insert_time_start)
         
     plt.loglog(list_sizes, bubble_time, '-o')
