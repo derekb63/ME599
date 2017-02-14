@@ -6,6 +6,7 @@
 # 2/7/2017
 
 from time import time
+import timeit
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -16,7 +17,7 @@ bubble_time = []
 sorted_time = []
 quicksort_time = []
 insert_time = []
-list_sizes = np.arange(1, 10000, 10)
+list_sizes = np.arange(1, 10000, 1000)
 
 
 for x in tqdm(list_sizes):
