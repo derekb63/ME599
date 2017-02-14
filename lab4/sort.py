@@ -8,6 +8,7 @@
 from time import time
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
 
 def bubblesort(to_sort):
@@ -22,7 +23,7 @@ def bubblesort(to_sort):
 
 
 def is_sorted(check_list):
-    if check_list == sorted(check_list):
+    if all([check_list[x] <= check_list[x+1] for x in range(len(check_list)-1)]):
         return True
     else:
         return False
@@ -51,7 +52,7 @@ def quicksort(to_sort):
     return sorted_list
 
    
-def insertionsort(to_sort):
+def insertion_sort(to_sort):
     if is_sorted(to_sort) == True:
         return to_sort
         
@@ -64,10 +65,9 @@ def insertionsort(to_sort):
         to_sort[j+1] = key
     return to_sort
 if __name__ == '__main__':
-    # dgfasg
 
     list_sizes = np.arange(10, 200, 10)
-    
+    # Check to see if the sort functions work
     for x in list_sizes:
         test_list = list(np.random.randint(10, size=x))
     
@@ -79,3 +79,13 @@ if __name__ == '__main__':
     
         if is_sorted(insertionsort(test_list[:])) is False:
             print 'insertion did not sort test list of length {0}'.format(x)
+
+    # Plot the time taken for 10 bubblesorts
+    bubble_time = []
+    for i in range(10):
+        start = time()
+        bubblesort(list(np.random.randint(10, size=list_sizes[-1])))
+        bubble_time.append(time()-start)
+    print 'The average time for bubble sort on a random list of length' + \
+          ' {0} is {1:.4f} seconds for 10 runs'.format(list_sizes[-1],
+                                                       np.mean(bubble_time))
