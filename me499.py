@@ -44,15 +44,15 @@ class GradingHarness:
             if actual == None:
                 remaining_grade += possible
                 # print '  {0} needs to be graded by a TA {1} possible'.format(name, possible)
-                print 'some text'
+                print ('some text')
             else:
                 actual_grade += actual
                 possible_grade += possible
-                print '  {0}: {1} out of {2}'.format(name, actual, possible)
-        print '{0:0.2f}%, {1:0.2f} points out of {2:0.2f}'.format(100.0 * actual_grade / possible_grade, float(actual_grade) * self.total_points / possible_grade, self.total_points)
+                print ('  {0}: {1} out of {2}'.format(name, actual, possible))
+        print ('{0:0.2f}%, {1:0.2f} points out of {2:0.2f}'.format(100.0 * actual_grade / possible_grade, float(actual_grade) * self.total_points / possible_grade, self.total_points))
 
         if remaining_grade != 0:
-            print '{0:2f} still to be allocated by a TA'.format(remaining_grade)
+            print ('{0:2f} still to be allocated by a TA'.format(remaining_grade))
 
         return actual_grade
 
@@ -70,7 +70,7 @@ def grade(number):
     set_utility_path(number)
     from utility import Grader
 
-    print 'Grading', number
+    print ('Grading', number)
     g = Grader()
     g.set_cwd(number)
     g.grade()
@@ -90,7 +90,7 @@ def submit(number):
 
     #call(['tar', 'czf', 'foo.tgz'] + tar_arguments(), cwd=foo)
 
-    print 'Tarball created:', '{0}-{1}.tgz'.format(user, number)
+    print ('Tarball created:', '{0}-{1}.tgz'.format(user, number))
 
 
 # Download the files for a given lab.
