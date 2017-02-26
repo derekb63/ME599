@@ -9,6 +9,8 @@ import string
 from operator import itemgetter
 import sys
 from time import time
+import numpy as np
+from itertools import groupby, ifilter
 
 
 class Book:
@@ -17,7 +19,7 @@ class Book:
         words = data.readlines()
         self.words = []
         for i in range(len(words)):
-            self.words += words[i].lower().strip('\n').\
+            self.words += words[i].lower().strip('\n').replace('--', ' ').\
                                translate(None, string.punctuation).split()
 
     def number_of_words(self):
@@ -40,24 +42,13 @@ class Book:
         return self.__sub__(other)
 
     def common_words(self, n=10):
-        start = time()
-        new_words = self.words[:]
-        if n > len(new_words):
-            n = len(new_words)
+        if n > self.number_of_unique:
+            n = self.number_of_unique
         word_count = []
-        for i in self.unique_words():
-            temp_count = 0
-            while True:
-                # http://stackoverflow.com/questions/7571635/fastest-way-to-check-if-a-value-exist-in-a-list
-                try:
-                    new_words.pop(new_words.index(i))
-                    temp_count += 1
-                except:
-                    word_count.append([i, temp_count])
-                    break
+        for word, group_of_words in groupby(sorted(self.words)):
+            word_count.append([word, len(list(group_of_words))])
         word_count.sort(key=lambda l: l[1])
         just_words = [i[0] for i in word_count]
-        print time()-start
         return just_words[len(just_words)-n:]
 
     def print_letter_frequencies(self):
@@ -67,7 +58,6 @@ class Book:
         letter_count = []
         for i in letters:
             letter_count.append(long_string.count(i))
-            long_string.remove(i)
         letter_count = zip(letters, letter_count)
         letter_count.sort(key=lambda l: l[1])
         letter_count.reverse()
@@ -78,14 +68,17 @@ class Book:
 
 
 if __name__ == '__main__':
+    start = time()
     book_name = 'war_and_peace.txt'
     book_name2 = 'test_book.txt'
     dictionary = '/usr/share/dict/words'
     b = Book(book_name)
     c = Book(book_name2)
     dictionary = Book(dictionary)
+    b.common_words()
+    b.print_letter_frequencies()
     print 'Num dictionary words: ', dictionary.number_of_words()
     print 'Num war and peace words: ', b.number_of_words()
     print 'Num unique words: ', b.number_of_unique()
-    print 'b - c: ', len(b-c)
+    print time()-start
     # Word count for the book according to wc is 566308
