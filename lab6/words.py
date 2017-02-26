@@ -6,9 +6,9 @@
 # 2/21/2017
 
 import string
-from operator import itemgetter
-import sys
 from time import time
+from itertools import groupby
+
 
 class Book:
     def __init__(self, book_title):
@@ -18,6 +18,7 @@ class Book:
         for i in range(len(words)):
             # To make this count match the on provided by the wc command
             # remove the translate and replace functions
+
             self.words += words[i].lower().strip('\n').replace('--', ' ').\
                                translate(None, string.punctuation).split()
 
@@ -41,13 +42,11 @@ class Book:
         return self.__sub__(other)
 
     def common_words(self, n=10):
-        start = time()
-        new_words = self.words[:]
-        if n > len(new_words):
-            n = len(new_words)
+        if n > self.number_of_unique:
+            n = self.number_of_unique
         word_count = []
-        for i in self.unique_words():
-                word_count.append([i, new_words.count(i)])
+        for word, group_of_words in groupby(sorted(self.words)):
+            word_count.append([word, len(list(group_of_words))])
         word_count.sort(key=lambda l: l[1])
         just_words = [i[0] for i in word_count]
         print time()-start
@@ -70,14 +69,17 @@ class Book:
 
 
 if __name__ == '__main__':
+    start = time()
     book_name = 'war_and_peace.txt'
     book_name2 = 'test_book.txt'
     dictionary = '/usr/share/dict/words'
     b = Book(book_name)
     c = Book(book_name2)
     dictionary = Book(dictionary)
+    b.common_words()
+    b.print_letter_frequencies()
     print 'Num dictionary words: ', dictionary.number_of_words()
     print 'Num war and peace words: ', b.number_of_words()
     print 'Num unique words: ', b.number_of_unique()
-    print 'b - c: ', len(b-c)
+    print time()-start
     # Word count for the book according to wc is 566308
