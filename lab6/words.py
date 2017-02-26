@@ -8,7 +8,7 @@
 import string
 from operator import itemgetter
 import sys
-
+from time import time
 
 class Book:
     def __init__(self, book_title):
@@ -16,7 +16,9 @@ class Book:
         words = data.readlines()
         self.words = []
         for i in range(len(words)):
-            self.words += words[i].lower().strip('\n').\
+            # To make this count match the on provided by the wc command
+            # remove the translate and replace functions
+            self.words += words[i].lower().strip('\n').replace('--', ' ').\
                                translate(None, string.punctuation).split()
 
     def number_of_words(self):
@@ -39,15 +41,16 @@ class Book:
         return self.__sub__(other)
 
     def common_words(self, n=10):
+        start = time()
         new_words = self.words[:]
         if n > len(new_words):
             n = len(new_words)
         word_count = []
         for i in self.unique_words():
                 word_count.append([i, new_words.count(i)])
-                new_words.remove(i)
         word_count.sort(key=lambda l: l[1])
         just_words = [i[0] for i in word_count]
+        print time()-start
         return just_words[len(just_words)-n:]
 
     def print_letter_frequencies(self):
@@ -57,7 +60,6 @@ class Book:
         letter_count = []
         for i in letters:
             letter_count.append(long_string.count(i))
-            long_string.remove(i)
         letter_count = zip(letters, letter_count)
         letter_count.sort(key=lambda l: l[1])
         letter_count.reverse()
