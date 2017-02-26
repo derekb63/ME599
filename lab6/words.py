@@ -8,6 +8,7 @@
 import string
 from operator import itemgetter
 import sys
+from time import time
 
 
 class Book:
@@ -39,15 +40,24 @@ class Book:
         return self.__sub__(other)
 
     def common_words(self, n=10):
+        start = time()
         new_words = self.words[:]
         if n > len(new_words):
             n = len(new_words)
         word_count = []
         for i in self.unique_words():
-                word_count.append([i, new_words.count(i)])
-                new_words.remove(i)
+            temp_count = 0
+            while True:
+                # http://stackoverflow.com/questions/7571635/fastest-way-to-check-if-a-value-exist-in-a-list
+                try:
+                    new_words.pop(new_words.index(i))
+                    temp_count += 1
+                except:
+                    word_count.append([i, temp_count])
+                    break
         word_count.sort(key=lambda l: l[1])
         just_words = [i[0] for i in word_count]
+        print time()-start
         return just_words[len(just_words)-n:]
 
     def print_letter_frequencies(self):
