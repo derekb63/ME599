@@ -26,9 +26,6 @@ def integrate(f, a, b, step=0.001):
     if isinstance(f, LambdaType) is False:
         print 'The input function is not of type: LambdaType'
         return None
-#    elif len(a) != len(b):
-#        print 'The interval variables a and b do not have the same length'
-#        return None
     try:
         float(step)
     except:
@@ -39,6 +36,9 @@ def integrate(f, a, b, step=0.001):
         # function f(x,y,z,...,n) with except block being for a function
         # of x only.
         try:
+            if len(a) != len(b):
+                print 'The interval variables a and b are not same length'
+                return None
             value = 0
             limits = []
             delta = [step]*len(a)
@@ -55,6 +55,7 @@ def integrate(f, a, b, step=0.001):
                 value += f(*i)*np.prod(delta)
             return value
         except:
+            value = 0
             interval = np.arange(a, b+step, step)
             for i in interval:
                 value += f(i)*step
