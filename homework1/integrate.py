@@ -9,12 +9,12 @@ from types import LambdaType
 import numpy as np
 import matplotlib.pyplot as plt
 '''
-Integrate uses the trapezoidal rule todetermine the definite integral of the
-input function
+Integrate uses the right rectangle rule to determine the definite integral of
+the input function
     Inputs:
         f: a lambda function to be inetgrated
         a: the lower bound of the variables
-        b: the upper bound of the varialbes
+        b: the upper bound of the variables
         step: the step size or delta used for the integration
 
     Outputs:
