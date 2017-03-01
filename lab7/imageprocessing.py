@@ -54,7 +54,7 @@ class GetImage:
                 image.save_image(folder+'/'+'image{0}'.format(x))
 
 if __name__ == '__main__':
-    test = ImProcess('test-image')
+    test = ImProcess('image0')
     test.show()
     print test.avg_intensity()
 
