@@ -49,7 +49,6 @@ class Book:
             word_count.append([word, len(list(group_of_words))])
         word_count.sort(key=lambda l: l[1])
         just_words = [i[0] for i in word_count]
-        print time()-start
         return just_words[len(just_words)-n:]
 
     def print_letter_frequencies(self):
@@ -76,10 +75,10 @@ if __name__ == '__main__':
     b = Book(book_name)
     c = Book(book_name2)
     dictionary = Book(dictionary)
-    b.common_words()
+    print b.common_words()
     b.print_letter_frequencies()
     print 'Num dictionary words: ', dictionary.number_of_words()
     print 'Num war and peace words: ', b.number_of_words()
     print 'Num unique words: ', b.number_of_unique()
-    print time()-start
+    print 'Run time: ', time()-start
     # Word count for the book according to wc is 566308
