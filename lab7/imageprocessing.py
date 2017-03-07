@@ -11,6 +11,7 @@ import os
 import time
 import matplotlib.pyplot as plt
 from itertools import groupby
+import scipy.signal
 # To save an image from grabber use the syntax
 # <variable name> = Webcam()
 # <variable name>.save_image(<filename>)
@@ -38,12 +39,18 @@ class ImProcess:
         self.data = self.image.grab_image_data()
 
     def show(self):
-        return self.image.grab_image()
+        self.image.grab_image().show()
 
-    def avg_intensity(self):
-        pixel_data = list(self.data)
-        pixel_mean = [sum(x)/len(x) for x in pixel_data]
-        return sum(pixel_mean) / len(pixel_mean)
+
+    def avg_intensity(self, other=None):
+        if other is None:
+            pixel_data = list(self.data)
+            pixel_mean = [sum(x)/len(x) for x in pixel_data]
+            return sum(pixel_mean) / len(pixel_mean)
+        else:
+            pixel_data = other.getdata()
+            pixel_mean = [float(sum(x))/len(x) for x in pixel_data]
+            return float(sum(pixel_mean)) / len(pixel_mean)
 
     def colors(self):
         return set(self.data)
@@ -53,24 +60,46 @@ class ImProcess:
         for color, group_of_colors in groupby(sorted(self.data)):
             pixel_count.append((color, len(list(group_of_colors))))
         pixel_count.sort(key=lambda l: l[1])
-        return pixel_count[-1]
+        return pixel_count[-15:]
 
     def multi_image(self, num_imgs=10, wait=1, plot=True):
         intensity_list = []
         times = []
         start = time.time()
         for i in xrange(num_imgs):
+            loop_start = time.time()
             self.__init__()
-            self.show()
             intensity_list.append(self.avg_intensity())
             times.append(time.time()-start)
             time.sleep(wait)
         if plot is True:
             plt.plot(times, intensity_list)
+            plt.plot(times, scipy.signal.medfilt(intensity_list))
             plt.xlabel('Time (s)')
             plt.ylabel('Average Intensity')
+            plt.legend(['Raw Intensity', 'Filtered Intensity'], loc=0)
             plt.show()
         return intensity_list
+
+    def motion(self):
+        img1 = self.image.grab_image()
+        no_movement = ImageChops.difference(img1,img1)
+        self.__init__()
+        img2 = self.image.grab_image()
+        movement = ImageChops.difference(img1, img2)
+        print 'moving: ', self.avg_intensity(movement)
+        print 'not moving: ', self.avg_intensity(no_movement)
+        movement.show()
+        if self.avg_intensity(movement) > 3:
+            return list(movement.getdata()), True
+        else:
+            return list(movement.getdata()), False
+
+    def daytime(self, threshold=50):
+        if self.avg_intensity() > threshold:
+            return True
+        else:
+            return False
 
 
 # class GetImage:
@@ -97,6 +126,11 @@ if __name__ == '__main__':
 
     test = ImProcess()
     print test.avg_intensity()
-    test.show()
+   #  test.show()
     print test.most_common_color()
-    i = test.multi_image()
+    print test.daytime() 
+#    i = test.multi_image()
+    diffs, moving = test.motion()
+    print 'Movement: ', moving 
+  
+
