@@ -8,7 +8,9 @@
 from grabber import Webcam
 from PIL import Image, ImageChops
 import os
-
+import time
+import matplotlib.pyplot as plt
+from itertools import groupby
 # To save an image from grabber use the syntax
 # <variable name> = Webcam()
 # <variable name>.save_image(<filename>)
@@ -31,32 +33,70 @@ import os
 
 
 class ImProcess:
-    def __init__(self,image_file):
-        self.image= Image.open(image_file)
+    def __init__(self):
+        self.image = Webcam()
+        self.data = self.image.grab_image_data()
 
     def show(self):
-        return self.image.show()
+        return self.image.grab_image()
 
     def avg_intensity(self):
-        pixel_data = list(self.image.getdata())
+        pixel_data = list(self.data)
         pixel_mean = [sum(x)/len(x) for x in pixel_data]
-	return  sum(pixel_mean) / len(pixel_mean)
+        return sum(pixel_mean) / len(pixel_mean)
+
+    def colors(self):
+        return set(self.data)
+
+    def most_common_color(self):
+        pixel_count = []
+        for color, group_of_colors in groupby(sorted(self.data)):
+            pixel_count.append((color, len(list(group_of_colors))))
+        pixel_count.sort(key=lambda l: l[1])
+        return pixel_count[-1]
+
+    def multi_image(self, num_imgs=10, wait=1, plot=True):
+        intensity_list = []
+        times = []
+        start = time.time()
+        for i in xrange(num_imgs):
+            self.__init__()
+            self.show()
+            intensity_list.append(self.avg_intensity())
+            times.append(time.time()-start)
+            time.sleep(wait)
+        if plot is True:
+            plt.plot(times, intensity_list)
+            plt.xlabel('Time (s)')
+            plt.ylabel('Average Intensity')
+            plt.show()
+        return intensity_list
 
 
-class GetImage:
-    def __init__(self, number_of_images, folder='images'):
-        for x in xrange(number_of_images):
-            image = Webcam()
-            try:
-                image.save_image(folder+'/'+'image{0}'.format(x))
-            except:
-                os.makedirs(folder)
-                image.save_image(folder+'/'+'image{0}'.format(x))
+# class GetImage:
+#    def __init__(self, number_of_images=1, folder='images', wait=0):
+#        file_number = 0
+#        for x in xrange(number_of_images):
+#            self.path = folder+'/'+'image{0}'.format(file_number)
+#            image = Webcam()
+#            try:
+#                while os.path.exists(self.path):
+#                    file_number += 1
+#                    self.path = folder+'/'+'image{0}'.format(file_number)
+#                image.save_image(self.path)
+#            except:
+#                while os.path.exists(self.path):
+#                    file_number += 1
+#                    self.path = folder+'/'+'image{0}'.format(file_number)
+#                os.makedirs(folder)
+#                image.save_image(self.path)
+#            time.sleep(wait)
+
 
 if __name__ == '__main__':
-    test = ImProcess('image0')
-    test.show()
+
+    test = ImProcess()
     print test.avg_intensity()
-
-
-
+    test.show()
+    print test.most_common_color()
+    i = test.multi_image()
