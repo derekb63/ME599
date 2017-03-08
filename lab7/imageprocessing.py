@@ -60,21 +60,20 @@ class ImProcess:
         for color, group_of_colors in groupby(sorted(self.data)):
             pixel_count.append((color, len(list(group_of_colors))))
         pixel_count.sort(key=lambda l: l[1])
-        return pixel_count[-15:]
+        return pixel_count[-1]
 
     def multi_image(self, num_imgs=10, wait=1, plot=True):
         intensity_list = []
         times = []
         start = time.time()
         for i in xrange(num_imgs):
-            loop_start = time.time()
             self.__init__()
             intensity_list.append(self.avg_intensity())
             times.append(time.time()-start)
             time.sleep(wait)
         if plot is True:
             plt.plot(times, intensity_list)
-            plt.plot(times, scipy.signal.medfilt(intensity_list))
+            plt.plot(times, scipy.signal.medfilt(intensity_list, 9))
             plt.xlabel('Time (s)')
             plt.ylabel('Average Intensity')
             plt.legend(['Raw Intensity', 'Filtered Intensity'], loc=0)
@@ -83,14 +82,12 @@ class ImProcess:
 
     def motion(self):
         img1 = self.image.grab_image()
-        no_movement = ImageChops.difference(img1,img1)
         self.__init__()
         img2 = self.image.grab_image()
         movement = ImageChops.difference(img1, img2)
-        print 'moving: ', self.avg_intensity(movement)
-        print 'not moving: ', self.avg_intensity(no_movement)
         movement.show()
-        if self.avg_intensity(movement) > 3:
+        print self.avg_intensity(movement)
+        if self.avg_intensity(movement) > 2:
             return list(movement.getdata()), True
         else:
             return list(movement.getdata()), False
@@ -125,12 +122,12 @@ class ImProcess:
 if __name__ == '__main__':
 
     test = ImProcess()
-    print test.avg_intensity()
+    print 'Average Intensity: ', test.avg_intensity()
    #  test.show()
-    print test.most_common_color()
-    print test.daytime() 
+    print 'Most Common Color: ', test.most_common_color()
+    print 'Is it Daytime: ', test.daytime() 
 #    i = test.multi_image()
     diffs, moving = test.motion()
-    print 'Movement: ', moving 
-  
+    print 'Movement: ', moving
+    test.multi_image(num_imgs=120)
 
