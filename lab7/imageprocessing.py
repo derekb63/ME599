@@ -6,12 +6,12 @@
 # 2/28/2017
 
 from grabber import Webcam
-from PIL import Image, ImageChops
-import os
+from PIL import ImageChops, ImageFilter
 import time
 import matplotlib.pyplot as plt
 from itertools import groupby
 import scipy.signal
+import numpy as np
 # To save an image from grabber use the syntax
 # <variable name> = Webcam()
 # <variable name>.save_image(<filename>)
@@ -41,7 +41,6 @@ class ImProcess:
     def show(self):
         self.image.grab_image().show()
 
-
     def avg_intensity(self, other=None):
         if other is None:
             pixel_data = list(self.data)
@@ -52,6 +51,12 @@ class ImProcess:
             pixel_mean = [float(sum(x))/len(x) for x in pixel_data]
             return float(sum(pixel_mean)) / len(pixel_mean)
 
+    def euclidean_distance(self, img=None):
+        if img is None:
+            return np.sqrt(np.sum(np.power(np.array(self.data), 2)))
+        else:
+            return np.sqrt(np.sum(np.power(np.array(img.getdata()), 2)))
+
     def colors(self):
         return set(self.data)
 
@@ -60,7 +65,16 @@ class ImProcess:
         for color, group_of_colors in groupby(sorted(self.data)):
             pixel_count.append((color, len(list(group_of_colors))))
         pixel_count.sort(key=lambda l: l[1])
-        return pixel_count[-1]
+        pixel_rel = [(x[0], float(x[1])/len(self.data)) for x in pixel_count]
+        common_color = pixel_rel[-1][0]
+        color_ratio = pixel_rel[-1][1]
+        ans = open('answers.txt', 'w')
+        ans.writelines('{0} is the most common color'.format(common_color) +
+                       '\n' +
+                       'The ratio of pixels that ' +
+                       'are this color is {0}'.format(color_ratio))
+        ans.close()
+        return (common_color, color_ratio)
 
     def multi_image(self, num_imgs=10, wait=1, plot=True):
         intensity_list = []
@@ -85,19 +99,29 @@ class ImProcess:
         self.__init__()
         img2 = self.image.grab_image()
         movement = ImageChops.difference(img1, img2)
-        movement.show()
-        print self.avg_intensity(movement)
-        if self.avg_intensity(movement) > 2:
-            return list(movement.getdata()), True
-        else:
-            return list(movement.getdata()), False
+        return self.euclidean_distance(movement)
 
-    def daytime(self, threshold=50):
+    def daytime(self, threshold=70):
         if self.avg_intensity() > threshold:
             return True
         else:
             return False
 
+    def event(self):
+        edges = self.image.grab_image()
+        print 'edges', edges
+        edges = self.image.grab_image().filter(ImageFilter.FIND_EDGES)
+        left = 234
+        right = left + 296
+        upper = 344
+        lower = upper + 140
+        cropped = edges.crop((left, upper, right, lower))
+        cropped.show(title='edges')
+        print 'Cropped', cropped
+#        edges = ImageOps.equalize(edges)
+#        edges = edges.convert('1')
+#        edges.show()
+        return list(edges.getdata())
 
 # class GetImage:
 #    def __init__(self, number_of_images=1, folder='images', wait=0):
@@ -120,14 +144,12 @@ class ImProcess:
 
 
 if __name__ == '__main__':
-
     test = ImProcess()
+    b = test.most_common_color()
     print 'Average Intensity: ', test.avg_intensity()
-   #  test.show()
     print 'Most Common Color: ', test.most_common_color()
-    print 'Is it Daytime: ', test.daytime() 
-#    i = test.multi_image()
-    diffs, moving = test.motion()
-    print 'Movement: ', moving
-    test.multi_image(num_imgs=120)
-
+    print 'Is it daytime: ', test.daytime()
+    moving = test.motion()
+    print 'Is there movement: ', moving
+#    test.multi_image(num_imgs=10)
+    test.event()
