@@ -6,12 +6,13 @@
 # 2/28/2017
 
 from grabber import Webcam
-from PIL import ImageChops, ImageFilter
+from PIL import ImageChops, ImageFilter, Image
 import time
 import matplotlib.pyplot as plt
 from itertools import groupby
 import scipy.signal
 import numpy as np
+import operator
 # To save an image from grabber use the syntax
 # <variable name> = Webcam()
 # <variable name>.save_image(<filename>)
@@ -37,6 +38,9 @@ class ImProcess:
     def __init__(self):
         self.image = Webcam()
         self.data = self.image.grab_image_data()
+
+    def open_file(self, filename):
+        return Image.open(filename)
 
     def show(self):
         self.image.grab_image().show()
@@ -99,6 +103,7 @@ class ImProcess:
         self.__init__()
         img2 = self.image.grab_image()
         movement = ImageChops.difference(img1, img2)
+#        movement.show()
         return self.euclidean_distance(movement)
 
     def daytime(self, threshold=70):
@@ -107,21 +112,36 @@ class ImProcess:
         else:
             return False
 
+    def cropit(self, left=234, right=234+296,
+               upper=350, lower=350+140):
+        img = self.image.grab_image()
+        return img.crop((left, upper, right, lower))
+
     def event(self):
-        edges = self.image.grab_image()
-        print 'edges', edges
-        edges = self.image.grab_image().filter(ImageFilter.FIND_EDGES)
-        left = 234
-        right = left + 296
-        upper = 344
-        lower = upper + 140
-        cropped = edges.crop((left, upper, right, lower))
-        cropped.show(title='edges')
-        print 'Cropped', cropped
+        cropped = self.cropit()
+        cropped.show()
 #        edges = ImageOps.equalize(edges)
 #        edges = edges.convert('1')
 #        edges.show()
-        return list(edges.getdata())
+        refer = self.open_file('black-tent.jpg')
+        refer = refer.crop((234, 325, 234+296, 344+140))
+#        refer.show()
+#        diff_img = ImageChops.screen(cropped, refer)
+#        diff_img = ImageChops.difference(cropped, ImageChops.offset(cropped,1))
+#        diff_img.show()
+#        print self.avg_intensity(diff_img)
+        diff_colors = cropped.histogram()
+        diff_colors2 = refer.histogram()
+#        diff_colors =  list(map(operator.sub, diff_colors, diff_colors2))
+#        plt.plot(diff_colors[0:255], 'r')
+#        plt.plot(diff_colors[256:511], 'g')
+#        plt.plot(diff_colors[511:768], 'b')
+#        plt.show()
+        plt.plot(diff_colors2[0:255], 'r')
+        plt.plot(diff_colors2[256:511], 'g')
+        plt.plot(diff_colors2[511:768], 'b')
+        plt.show()
+        return 
 
 # class GetImage:
 #    def __init__(self, number_of_images=1, folder='images', wait=0):
@@ -152,4 +172,4 @@ if __name__ == '__main__':
     moving = test.motion()
     print 'Is there movement: ', moving
 #    test.multi_image(num_imgs=10)
-    test.event()
+    edges = test.event()

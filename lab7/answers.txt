@@ -1,2 +1,2 @@
 (1, 1, 1) is the most common color
-The ratio of pixels that are this color is 0.0183143615723
+The ratio of pixels that are this color is 0.0189145406087
