@@ -1,4 +1,4 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 
 
 from random import randint
@@ -133,5 +133,5 @@ if __name__ == '__main__':
     b = TitForTat()
     c = Obsessive()
 
-    play(a, c, 3)
+    play(a, c, 5)
 
