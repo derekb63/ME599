@@ -6,13 +6,12 @@
 # 2/28/2017
 
 from grabber import Webcam
-from PIL import ImageChops, ImageFilter, Image
+from PIL import ImageChops, Image
 import time
 import matplotlib.pyplot as plt
 from itertools import groupby
 import scipy.signal
 import numpy as np
-import operator
 # To save an image from grabber use the syntax
 # <variable name> = Webcam()
 # <variable name>.save_image(<filename>)
@@ -106,7 +105,6 @@ class ImProcess:
         self.__init__()
         img2 = self.image.grab_image()
         movement = ImageChops.difference(img1, img2)
-#        movement.show()
         if self.euclidean_distance(movement) > 9000:
             return True
         else:
@@ -124,52 +122,19 @@ class ImProcess:
         return img.crop((left, upper, right, lower))
 
     def event(self):
-#        cropped = self.cropit()
-#        cropped.show()
-#        edges = ImageOps.equalize(edges)
-#        edges = edges.convert('1')
-#        edges.show()
-#        cropped = self.open_file('blue-tent.jpg')
         cropped = self.cropit()
-#        cropped = cropped.cropit((234, 234+296, 344+140))
-
-        refer = self.open_file('orange-tent.jpg')
-        refer = refer.crop((234, 325, 234+296, 344+140))
-#        refer.show()
-        gray_img = Image.new('RGB', cropped.size, (150,150,150))
+        gray_img = Image.new('RGB', cropped.size, (150, 150, 150))
         diff_img = ImageChops.difference(cropped, gray_img)
         if self.euclidean_distance(diff_img) > 14500:
             return True
         else:
             return False
-#        diff_img = ImageChops.difference(cropped, ImageChops.offset(cropped,1))
-#        diff_img.show()
-#        print self.avg_intensity(diff_img)
-#        diff_colors = cropped.histogram()
-#        diff_colors2 = diff_img.histogram()
-#        diff_colors =  list(map(operator.sub, diff_colors, diff_colors2))
-#        plt.plot(diff_colors[0:255], 'r')
-#        plt.plot(diff_colors[256:511], 'g')
-#        plt.plot(diff_colors[511:768], 'b')
-#        plt.show()
-#        plt.figure(2)
-#        plt.plot(diff_colors2[0:255], 'r')
-#        plt.plot(diff_colors2[256:511], 'g')
-#        plt.plot(diff_colors2[511:768], 'b')
-#        plt.show()
-#        return 
-
-
 
 if __name__ == '__main__':
     test = ImProcess()
-    b = test.most_common_color()
-#    test.multi_image()
+    test.multi_image()
     print 'Average Intensity: ', test.avg_intensity()
     print 'Most Common Color: ', test.most_common_color()
     print 'Is it daytime: ', test.daytime()
-    moving = test.motion()
-    print 'Is there movement: ', moving
+    print 'Is there movement: ', test.motion()
     print 'Is there an event: ', test.event()
-#    test.multi_image(num_imgs=10)
-
