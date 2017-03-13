@@ -80,23 +80,26 @@ class ImProcess:
         ans.close()
         return (common_color, color_ratio)
 
-    def multi_image(self, num_imgs=10, wait=1, plot=True):
-        intensity_list = []
+    def multi_image(self, num_imgs=99, wait=1, plot=True):
+        self.intensity_list = []
         times = []
         start = time.time()
         for i in xrange(num_imgs):
             self.__init__()
-            intensity_list.append(self.avg_intensity())
+            self.intensity_list.append(self.avg_intensity())
             times.append(time.time()-start)
             time.sleep(wait)
+        self.filtered_intensity_list = scipy.signal.\
+                                       medfilt(self.intensity_list, 9)
         if plot is True:
-            plt.plot(times, intensity_list)
-            plt.plot(times, scipy.signal.medfilt(intensity_list, 9))
+            plt.figure(1)
+            plt.plot(times, self.intensity_list)
+            plt.plot(times, self.filtered_intensity_list)
             plt.xlabel('Time (s)')
             plt.ylabel('Average Intensity')
             plt.legend(['Raw Intensity', 'Filtered Intensity'], loc=0)
             plt.show()
-        return intensity_list
+        return self.intensity_list, self.filtered_intensity_list
 
     def motion(self):
         img1 = self.image.grab_image()
@@ -104,7 +107,10 @@ class ImProcess:
         img2 = self.image.grab_image()
         movement = ImageChops.difference(img1, img2)
 #        movement.show()
-        return self.euclidean_distance(movement)
+        if self.euclidean_distance(movement) > 9000:
+            return True
+        else:
+            return False
 
     def daytime(self, threshold=70):
         if self.avg_intensity() > threshold:
@@ -118,58 +124,52 @@ class ImProcess:
         return img.crop((left, upper, right, lower))
 
     def event(self):
-        cropped = self.cropit()
-        cropped.show()
+#        cropped = self.cropit()
+#        cropped.show()
 #        edges = ImageOps.equalize(edges)
 #        edges = edges.convert('1')
 #        edges.show()
-        refer = self.open_file('black-tent.jpg')
+#        cropped = self.open_file('blue-tent.jpg')
+        cropped = self.cropit()
+#        cropped = cropped.cropit((234, 234+296, 344+140))
+
+        refer = self.open_file('orange-tent.jpg')
         refer = refer.crop((234, 325, 234+296, 344+140))
 #        refer.show()
-#        diff_img = ImageChops.screen(cropped, refer)
+        gray_img = Image.new('RGB', cropped.size, (150,150,150))
+        diff_img = ImageChops.difference(cropped, gray_img)
+        if self.euclidean_distance(diff_img) > 14500:
+            return True
+        else:
+            return False
 #        diff_img = ImageChops.difference(cropped, ImageChops.offset(cropped,1))
 #        diff_img.show()
 #        print self.avg_intensity(diff_img)
-        diff_colors = cropped.histogram()
-        diff_colors2 = refer.histogram()
+#        diff_colors = cropped.histogram()
+#        diff_colors2 = diff_img.histogram()
 #        diff_colors =  list(map(operator.sub, diff_colors, diff_colors2))
 #        plt.plot(diff_colors[0:255], 'r')
 #        plt.plot(diff_colors[256:511], 'g')
 #        plt.plot(diff_colors[511:768], 'b')
 #        plt.show()
-        plt.plot(diff_colors2[0:255], 'r')
-        plt.plot(diff_colors2[256:511], 'g')
-        plt.plot(diff_colors2[511:768], 'b')
-        plt.show()
-        return 
+#        plt.figure(2)
+#        plt.plot(diff_colors2[0:255], 'r')
+#        plt.plot(diff_colors2[256:511], 'g')
+#        plt.plot(diff_colors2[511:768], 'b')
+#        plt.show()
+#        return 
 
-# class GetImage:
-#    def __init__(self, number_of_images=1, folder='images', wait=0):
-#        file_number = 0
-#        for x in xrange(number_of_images):
-#            self.path = folder+'/'+'image{0}'.format(file_number)
-#            image = Webcam()
-#            try:
-#                while os.path.exists(self.path):
-#                    file_number += 1
-#                    self.path = folder+'/'+'image{0}'.format(file_number)
-#                image.save_image(self.path)
-#            except:
-#                while os.path.exists(self.path):
-#                    file_number += 1
-#                    self.path = folder+'/'+'image{0}'.format(file_number)
-#                os.makedirs(folder)
-#                image.save_image(self.path)
-#            time.sleep(wait)
 
 
 if __name__ == '__main__':
     test = ImProcess()
     b = test.most_common_color()
+#    test.multi_image()
     print 'Average Intensity: ', test.avg_intensity()
     print 'Most Common Color: ', test.most_common_color()
     print 'Is it daytime: ', test.daytime()
     moving = test.motion()
     print 'Is there movement: ', moving
+    print 'Is there an event: ', test.event()
 #    test.multi_image(num_imgs=10)
-    edges = test.event()
+
