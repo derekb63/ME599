@@ -35,19 +35,27 @@ import numpy as np
 
 class ImProcess:
     def __init__(self):
+        # Initialize both the image and the data variables
         self.image = Webcam()
         self.data = self.image.grab_image_data()
 
     def open_file(self, filename):
+        # Open an external file as a PIL image file for use in the class
+        # Objects created by this class use the fucntions of the PIL toolbox
         return Image.open(filename)
 
     def show(self):
         self.image.grab_image().show()
 
     def avg_intensity(self, other=None):
+        # If the average intensity of an image that is not self input it as
+        # other and the average intensity will be returned provided the
+        # other image is a PIL Image object
         if other is None:
+            # Average the intensity of each pixel in the image
             pixel_data = list(self.data)
             pixel_mean = [sum(x)/len(x) for x in pixel_data]
+            # Average the intensity of all pixels in the image
             return sum(pixel_mean) / len(pixel_mean)
         else:
             pixel_data = other.getdata()
@@ -71,6 +79,7 @@ class ImProcess:
         pixel_rel = [(x[0], float(x[1])/len(self.data)) for x in pixel_count]
         common_color = pixel_rel[-1][0]
         color_ratio = pixel_rel[-1][1]
+        # Write the most common color and the ratio of said color to a txt file
         ans = open('answers.txt', 'w')
         ans.writelines('{0} is the most common color'.format(common_color) +
                        '\n' +
@@ -80,6 +89,8 @@ class ImProcess:
         return (common_color, color_ratio)
 
     def multi_image(self, num_imgs=99, wait=1, plot=True):
+        # Take num_imgs from the webcam with a time delay of wait and return
+        # return the average intensity of all the images
         self.intensity_list = []
         times = []
         start = time.time()
@@ -88,6 +99,7 @@ class ImProcess:
             self.intensity_list.append(self.avg_intensity())
             times.append(time.time()-start)
             time.sleep(wait)
+        # Filter the average intensities based on a 9 point median filter
         self.filtered_intensity_list = scipy.signal.\
                                        medfilt(self.intensity_list, 9)
         if plot is True:
@@ -101,6 +113,10 @@ class ImProcess:
         return self.intensity_list, self.filtered_intensity_list
 
     def motion(self):
+        # Determine if there is motion in the quad based on two images grabbed
+        # close together then subtracted from one another. The euclidean
+        # distance of the subracted image determines if there is motion based
+        # on an observed value for motion
         img1 = self.image.grab_image()
         self.__init__()
         img2 = self.image.grab_image()
@@ -122,9 +138,15 @@ class ImProcess:
         return img.crop((left, upper, right, lower))
 
     def event(self):
+        # Determine if there is an event in the center square of the quad
         cropped = self.cropit()
+        # Create a new image that is the same size as the cropped one that is
+        # a gray that is close to center of the quad
         gray_img = Image.new('RGB', cropped.size, (150, 150, 150))
         diff_img = ImageChops.difference(cropped, gray_img)
+        # Determine if there is an event based on if the euclidean distance is
+        # above the observed threshold
+        # (blue, black and orange 'tents' were tested)
         if self.euclidean_distance(diff_img) > 14500:
             return True
         else:
