@@ -3,10 +3,9 @@
 """
 Created on Thu Mar  9 15:27:16 2017
 
-@author: aero-10
+@author: beande
 """
 import random
-from collections import Counter
 
 
 class Beande:
@@ -14,22 +13,24 @@ class Beande:
         self.name = name
         self.plays = {'Rock': 0, 'Paper': 1, 'Scissors': 2}
         self.opp_history = []
-        self.seed = 'Paper'
-        random.seed(self.plays[self.seed])
+        self.seed = self.plays['Paper']
+        random.seed(self.seed)
 
     def play(self, name):
-	play = random.randint(0, 2)
+        play = random.randint(0, 2)
         return play
 
     def learn(self, opp_name, opp_move):
         self.opp_history.append(opp_move)
-        enough_games = len(self.opp_history)%10 == 0
-        if enough_games is True:
+        enough_games = len(self.opp_history)
+        if enough_games % 10 is 0:
             same_move = len(set(self.opp_history)) == 1
             if same_move is True:
                 same_move_as_seed = set(self.opp_history).pop()
-                if same_move_as_seed is True:
+                if same_move_as_seed is self.seed:
                     random.seed(random.choice(self.plays.keys()))
+        if len(self.opp_history) is 10:
+            self.opp_history = []
 
 
 if __name__ == '__main__':
