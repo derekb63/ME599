@@ -1,0 +1,57 @@
+This code is the python class ImProcess created to complete the tasks outlined
+in lab7. The tasks are:
+
+1. Determine the average intensity of an image
+2. Determine if it is day or night
+2. Plot the average intensity over time
+3. Filter the time resolved intensity for smoother data
+4. Grab a webcam image and return the most common color
+5. Write an output file answers.txt that returns
+    a. What is the most common color
+    b. What proportion of pixels have this color
+6. Detect motion in the quad and return True if there is motion
+7. Detect an event in the quad and return True if there is an event
+
+The average intensity of the image is calculated in the class
+function avg_intensity. The average intensity of the image is
+calculated by first averaging the rgb values of each pixel in
+the image and then average all of the pixels to return a global
+image average
+
+Day and night are determined by checking if the average intensity
+with a threshold. The threshold was determined by looking at data
+for one day and therefore may be off depeding on the users definition
+of when night starts.
+
+The time resolved average intensity uses the same method as that
+used for a single image but over multiple images whose values are
+stored in a list then plotted. The filter used is a 9 point median
+filter for the data that is implemented using the scipy signal library
+
+
+The most common color is determined by taking the data, stored as
+a list of rbg tuples, named self.data in the class __init__ function,
+then sorting it and grouping it into bins using the groupby function.
+The bin counts and corresponding colors are stored in a list in case
+all of the data is needed in the future. The most common color and the ratio
+of pixels that contain this color are then written to answers.txt and
+returned from the function.
+
+
+Motion in the quad is determined by taking two webcam images close together
+and subtracting the images. The euclidean distance of the pixels is then calculated
+in the external class fucntion euclidean_distance. The thereshold of 8000
+was observed to be a good fit for motion although the function has trouble
+detecting motion at night
+
+
+Events in the quad are determined by taking an image from the webcam and
+cropping it to be only the center concrete rectangle. Then an image of the
+same size is created where all of the pixels are gray, rgb (150, 150, 150),
+then the gray image is subtracted from the cropped image of the quad.
+The euclidean_distance is then calculated for the image and True is returned
+if the value is over the predetermined threshold. Tests for this event function
+conducted by taking a quad image devoid of people or events and artificially
+creating a 'tent' (colored square) in the concrete rectangle. Black, orange and
+blue 'tents' were considered as they are observed to be the most common colors.
+The test files have been included in the submission for reference.

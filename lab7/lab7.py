@@ -23,14 +23,11 @@ import numpy as np
 #     write a function daytime that returns True and False
 #     write a function that grabs an image and calculates the most common
 #         color in it. what is the color, how many pixels have this color
-#     Write a function that detects mothion in the image stream that returns
+#     Write a function that detects motion in the image stream that returns
 #         the average pixel difference in a function called motion that
 #         returns True or False if there is motion in the quad
 #     Write a function called event that returns true if there's an event
 #         happening in the quad
-
-# https://docs.python.org/3/library/sched.html
-# https://docs.python.org/2/library/os.html#os.listdir
 
 
 class ImProcess:
@@ -109,6 +106,7 @@ class ImProcess:
             plt.xlabel('Time (s)')
             plt.ylabel('Average Intensity')
             plt.legend(['Raw Intensity', 'Filtered Intensity'], loc=0)
+            plt.ylim([40, 120])
             plt.show()
         return self.intensity_list, self.filtered_intensity_list
 
@@ -121,7 +119,7 @@ class ImProcess:
         self.__init__()
         img2 = self.image.grab_image()
         movement = ImageChops.difference(img1, img2)
-        if self.euclidean_distance(movement) > 9000:
+        if self.euclidean_distance(movement) > 8000:
             return True
         else:
             return False
@@ -141,7 +139,7 @@ class ImProcess:
         # Determine if there is an event in the center square of the quad
         cropped = self.cropit()
         # Create a new image that is the same size as the cropped one that is
-        # a gray that is close to center of the quad
+        # a gray close to the color of the concrete in the quad
         gray_img = Image.new('RGB', cropped.size, (150, 150, 150))
         diff_img = ImageChops.difference(cropped, gray_img)
         # Determine if there is an event based on if the euclidean distance is
@@ -154,9 +152,11 @@ class ImProcess:
 
 if __name__ == '__main__':
     test = ImProcess()
-    test.multi_image()
+    # test.multi_image()
     print 'Average Intensity: ', test.avg_intensity()
-    print 'Most Common Color: ', test.most_common_color()
+    print 'Most Common Color: ', test.most_common_color()[0]
+    print 'Ratio of most common color pixels: ', test.most_common_color()[1]
     print 'Is it daytime: ', test.daytime()
     print 'Is there movement: ', test.motion()
     print 'Is there an event: ', test.event()
+
