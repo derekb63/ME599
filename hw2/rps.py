@@ -34,7 +34,7 @@ def play(a, b, n=1, verbose=True):
         # Each player selects a move
         a_move = a.play(b.name)
         b_move = b.play(a.name)
-    
+
         # Allow the players to learn from experience
         a.learn(b.name, b_move)
         b.learn(a.name, a_move)
