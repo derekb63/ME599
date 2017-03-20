@@ -45,10 +45,11 @@ class MyPlayer:
             elif move_name is 2:
                 self.move = 0
             elif move_name is 1:
-                self.move = 2      
-        #Detect the tit for tat player
+                self.move = 2  
+        # Detect the tit for tat player
         elif self.history.pop(-2) is opp_move:
             self.move = self.next_move()
+        # If it is not either player default to random with the init seed
         else:
             try:
                 del self.move
